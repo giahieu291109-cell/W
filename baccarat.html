@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Baccarat và Poster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: #2c2c2c;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .user-info .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid gold;
+        }
+
+        .user-info .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info .username {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .user-info .balance {
+            font-size: 1em;
+            color: #ffcc00;
+        }
+
+        .poster-container {
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .poster-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .game-container {
+            background-color: #2c2c2c;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #ffcc00;
+        }
+
+        .cards-display {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .player-area, .banker-area {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            width: 45%;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .player-area:hover, .banker-area:hover {
+            border-color: #ffcc00;
+        }
+
+        .card-hand {
+            display: flex;
+            justify-content: center;
+            min-height: 80px;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card {
+            width: 50px;
+            height: 70px;
+            background-color: #fff;
+            border-radius: 5px;
+            border: 1px solid #000;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .game-container button:not(.close-btn) {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .game-container button:not(.close-btn):hover {
+            background-color: #0056b3;
+        }
+
+        .game-result {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #ffcc00;
+        }
+
+        #chip-selection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .chip {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .chip:hover {
+            transform: scale(1.1);
+        }
+
+        .chip.active {
+            border-color: #ffcc00;
+            transform: scale(1.2);
+        }
+
+        .chip-1k { background-color: #3f51b5; }
+        .chip-5k { background-color: #f44336; }
+        .chip-10k { background-color: #4caf50; }
+    </style>
+</head>
+<body>
+
+    <audio id="deal-card-sound" src="deal-card.mp3"></audio>
+
+    <div class="user-info">
+        <img src="profile-pic.png" alt="Profile" class="profile-pic">
+        <div class="user-details">
+            <span id="profile-name" class="username"></span>
+            <span id="balanceLabelMain" class="balance"></span>
+        </div>
+    </div>
+
+    <div class="poster-container">
+        <img src="poster.jpg" alt="Poster Quảng Cáo" class="poster-image">
+    </div>
+
+    <div id="baccarat-game-container" class="game-container">
+        <button class="close-btn" onclick="closeBaccarat()">&times;</button>
+        <h2>Game Baccarat</h2>
+
+        <div id="current-bet-display" style="
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        ">Mức cược: 0 VND</div>
+
+        <div class="cards-display">
+            <div id="player-area" class="player-area" onclick="dealCards('player')">
+                <h3>Player</h3>
+                <div id="player-cards" class="card-hand">
+                </div>
+                <div id="player-score" class="score">0</div>
+            </div>
+
+            <div id="banker-area" class="banker-area" onclick="dealCards('banker')">
+                <h3>Banker</h3>
+                <div id="banker-cards" class="card-hand">
+                </div>
+                <div id="banker-score" class="score">0</div>
+            </div>
+        </div>
+
+        <div id="game-result" class="game-result"></div>
+
+        <div id="chip-selection">
+            <div class="chip chip-1k" onclick="selectChip(1000)">1K</div>
+            <div class="chip chip-5k" onclick="selectChip(5000)">5K</div>
+            <div class="chip chip-10k" onclick="selectChip(10000)">10K</div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost:3000'; // Đổi địa chỉ này khi triển khai lên Render
+        let currentUser = {};
+        let isSoundPlayed = false;
+        let deck = [];
+        let currentBet = 0;
+
+        window.onload = function() {
+            fetch(`${apiUrl}/users`)
+                .then(response => response.json())
+                .then(users => {
+                    currentUser = users.find(u => u.name === 'no_5tl_5');
+                    if (currentUser) {
+                        updateDisplay();
+                    } else {
+                        alert('Không tìm thấy người dùng. Vui lòng quay lại trang chủ.');
+                    }
+                })
+                .catch(error => console.error('Error fetching user:', error));
+            
+            initializeDeck();
+            selectChip(1000);
+        };
+        
+        function updateDisplay() {
+            const balanceElement = document.getElementById('balanceLabelMain');
+            if (balanceElement && currentUser.balance !== null) {
+                balanceElement.innerText = `Số dư: ${parseInt(currentUser.balance).toLocaleString('vi-VN')} VND`;
+            }
+
+            const nameElement = document.getElementById('profile-name');
+            if (nameElement && currentUser.name !== null) {
+                nameElement.innerText = currentUser.name;
+            }
+        }
+        
+        function updateUserOnServer(user) {
+            fetch(`${apiUrl}/update-user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Update success:', data))
+            .catch((error) => console.error('Update failed:', error));
+        }
+
+        function selectChip(amount) {
+            currentBet = amount;
+            document.getElementById('current-bet-display').innerText = `Mức cược: ${amount.toLocaleString('vi-VN')} VND`;
+
+            const chips = document.querySelectorAll('.chip');
+            chips.forEach(chip => chip.classList.remove('active'));
+
+            if (amount === 1000) document.querySelector('.chip-1k').classList.add('active');
+            if (amount === 5000) document.querySelector('.chip-5k').classList.add('active');
+            if (amount === 10000) document.querySelector('.chip-10k').classList.add('active');
+        }
+
+        function initializeDeck() {
+            const suits = ['♠', '♥', '♦', '♣'];
+            const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            for (const suit of suits) {
+                for (const rank of ranks) {
+                    deck.push({ rank, suit });
+                }
+            }
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function getCardValue(card) {
+            if (['J', 'Q', 'K', '10'].includes(card.rank)) return 0;
+            if (card.rank === 'A') return 1;
+            return parseInt(card.rank);
+        }
+
+        function calculateScore(hand) {
+            const total = hand.reduce((sum, card) => sum + getCardValue(card), 0);
+            return total % 10;
+        }
+
+        function closeBaccarat() {
+            window.location.href = 'index.html';
+        }
+
+        function dealCards(betOn) {
+            if (!currentUser || currentUser.balance < currentBet) {
+                alert('Bạn không đủ tiền để đặt cược!');
+                return;
+            }
+
+            currentUser.balance -= currentBet;
+            updateUserOnServer(currentUser);
+            updateDisplay();
+
+            const sound = document.getElementById('deal-card-sound');
+            sound.currentTime = 0;
+            sound.play();
+
+            document.getElementById('player-cards').innerHTML = '';
+            document.getElementById('banker-cards').innerHTML = '';
+            document.getElementById('player-score').innerText = '...';
+            document.getElementById('banker-score').innerText = '...';
+            document.getElementById('game-result').innerText = 'Đang chia bài...';
+
+            shuffleDeck();
+
+            let playerHand = [deck.pop(), deck.pop()];
+            let bankerHand = [deck.pop(), deck.pop()];
+
+            let playerNeedsThirdCard = calculateScore(playerHand) < 6;
+            if (playerNeedsThirdCard) {
+                playerHand.push(deck.pop());
+            }
+
+            let bankerNeedsThirdCard = false;
+            let bankerScore = calculateScore(bankerHand);
+            if (bankerScore <= 2) {
+                bankerNeedsThirdCard = true;
+            } else if (bankerScore === 3 && playerHand.length > 2) {
+                let playerThirdCardValue = getCardValue(playerHand[2]);
+                if (playerThirdCardValue !== 8) {
+                    bankerNeedsThirdCard = true;
+                }
+            } else if (bankerScore === 4 && playerHand.length > 2) {
+                let playerThirdCardValue = getCardValue(playerHand[2]);
+                if ([2, 3, 4, 5, 6, 7].includes(playerThirdCardValue)) {
+                    bankerNeedsThirdCard = true;
+                }
+            } else if (bankerScore === 5 && playerHand.length > 2) {
+                let playerThirdCardValue = getCardValue(playerHand[2]);
+                if ([4, 5, 6, 7].includes(playerThirdCardValue)) {
+                    bankerNeedsThirdCard = true;
+                }
+            } else if (bankerScore === 6 && playerHand.length > 2) {
+                let playerThirdCardValue = getCardValue(playerHand[2]);
+                if ([6, 7].includes(playerThirdCardValue)) {
+                    bankerNeedsThirdCard = true;
+                }
+            }
+            if (bankerNeedsThirdCard) {
+                bankerHand.push(deck.pop());
+            }
+
+            playerHand.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.innerText = card.rank;
+                document.getElementById('player-cards').appendChild(cardDiv);
+            });
+            bankerHand.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.innerText = card.rank;
+                document.getElementById('banker-cards').appendChild(cardDiv);
+            });
+
+            const finalPlayerScore = calculateScore(playerHand);
+            const finalBankerScore = calculateScore(bankerHand);
+            document.getElementById('player-score').innerText = finalPlayerScore;
+            document.getElementById('banker-score').innerText = finalBankerScore;
+
+            let resultMessage = '';
+            let winner = '';
+            if (finalPlayerScore > finalBankerScore) {
+                resultMessage = 'Player thắng!';
+                winner = 'player';
+            } else if (finalBankerScore > finalPlayerScore) {
+                resultMessage = 'Banker thắng!';
+                winner = 'banker';
+            } else {
+                resultMessage = 'Hòa!';
+                winner = 'tie';
+            }
+
+            document.getElementById('game-result').innerText = resultMessage;
+
+            if (winner === betOn) {
+                let prize = currentBet * 2;
+                currentUser.balance += prize;
+                updateUserOnServer(currentUser);
+                updateDisplay();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta name="screen-orientation" content="landscape">
+<meta name="x5-orientation" content="landscape">
+<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tài Xỉu</title>
+   a
+    <style>
+        body {
+        	const apiUrl = 'http://localhost:3000'; // Đổi địa chỉ này sau khi triển khai lên Render.
+        
+        	@media screen and (orientation: portrait) {
+  body {
+    transform: rotate(90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+}
+
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            background: url("background.jpg") no-repeat center center fixed;
+    background-size: cover;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .poster-image {
+    width: 500%;
+    height: auto;
+    display: block;
+}
+..poster-container {
+    margin-bottom: 30px;
+    width: 50%;
+    max-width: 600px;
+    height: 50px; /* Thêm dòng này để giới hạn chiều cao */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+        #history-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white; /* Màu trắng cho dấu "X" */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  text-shadow: 1px 1px 2px #000;
+}
+        #history-items-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  max-width: 300px;
+  margin: 15px auto;
+  padding: 10px;
+  background-color: #333;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+#history-items-container img {
+  width: 40px; /* Điều chỉnh kích thước hình ảnh nếu cần */
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+        #history-popup {
+  display: none;              /* ẩn mặc định */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;    /* căn giữa ngang */
+  align-items: center;        /* căn giữa dọc */
+  z-index: 3000;              /* nổi trên tất cả */
+}
+
+#history-popup .popup-content {
+  background: #222;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 80%;
+  text-align: center;
+}
+.history-graph-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 5px;
+  height: 100px;
+  margin-top: 15px;
+  border-bottom: 2px solid #555;
+  padding-bottom: 5px;
+  box-sizing: content-box;
+}
+
+.graph-column {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+.graph-bar {
+  width: 15px;
+  border-radius: 5px;
+  transition: height 0.3s ease-in-out;
+}
+
+.graph-bar.tai {
+  background-color: #ff0000;
+}
+
+.graph-bar.xiu {
+  background-color: #0000ff;
+}
+
+.graph-count {
+  position: absolute;
+  top: -20px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.graph-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color-box {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+.legend-color-box.tai {
+  background-color: #ff0000;
+}
+
+.legend-color-box.xiu {
+  background-color: #0000ff;
+}
+        .history-btn {
+  margin-top: 15px;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.withdraw-btn-fixed {
+  position: fixed;      /* cố định trên màn hình */
+  bottom: 20px;         /* cách mép dưới 20px */
+  left: 50%;            /* căn theo giữa màn hình */
+  transform: translateX(-50%); /* dịch trái 50% để thật sự ra giữa */
+  background: linear-gradient(to right, #d4af37, #b8860b);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  z-index: 1500;
+}
+
+.withdraw-btn-fixed:hover {
+  background: linear-gradient(to right, #ffd700, #daa520);
+}
+
+       .main-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45px;
+  background: linear-gradient(to right, #3b2a1a, #2a1c12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-pic {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid gold;
+}
+
+.profile-name {
+  font-size: 0.85em;
+  color: #fff;
+  font-weight: 500;
+}
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  background: #5c3e2e;
+  border: 1px solid #d4af37;
+  border-radius: 18px;
+  padding: 3px 8px;
+  font-size: 0.9em;
+  color: #fff;
+  gap: 5px;
+}
+
+.icon {
+  color: gold;
+}
+
+.add-btn {
+  background: gold;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-actions button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.85em;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+        
+        .balance-display .icon {
+            font-size: 1.2em;
+            color: gold;
+        }
+        
+        .balance-display .amount {
+            color: white;
+        }
+        
+        .recharge-btn, .logout-btn, .withdraw-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            outline: none;
+            margin-left: 10px;
+        }
+        
+        .logout-btn {
+            background-color: #c0392b;
+        }
+
+        .withdraw-btn {
+            background-color: #3498db;
+        }
+
+        .admin-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            outline: none;
+            margin-right: 10px;
+            display: none;
+        }
+
+        .game-poster {
+            width: 10%;
+            max-width: 250px;
+            margin-top: 80px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .game-poster:hover {
+            transform: translateY(-2px);
+        }
+
+        .popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.popup-content {
+  background: #2a1c12;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 10px;    /* nhỏ hơn */
+  width: 90%;
+  max-height: 10%;     /* thấp hơn */
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  color: #fff;
+  text-align: center;
+}
+
+
+        
+        .game-container {
+            width: 95%;
+            max-width: 700px;
+            background-color: #2c2c2c;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+        }
+
+        .popup-drag-handle {
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 12px 12px 0 0;
+            cursor: grab;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8em;
+            color: #ccc;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            transition: color 0.2s;
+            z-index: 101;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .history-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    max-width: 300px;
+    margin: 15px auto;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+.history-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+        
+        .history-item {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        
+        .history-item.tai {
+            background-color: #ff0000;
+        }
+        
+        .history-item.xiu {
+            background-color: #0000ff;
+        }
+
+        .game-area {
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            margin: 15px 0;
+            background: linear-gradient(to bottom, #4b2b1b, #724d35);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .bet-section {
+            width: 35%;
+            padding: 10px;
+            background-color: #5c3e2e;
+            border: 2px solid #b8860b;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: default;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .bet-section.selected {
+            border-color: yellow;
+            box-shadow: 0 0 10px yellow;
+        }
+
+        .bet-section.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .bet-label img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .bet-label.tai img {
+            content: url('Screenshot_20250822-045044.png');
+        }
+        
+        .bet-label.xiu img {
+            content: url('Screenshot_20250822-050256.png');
+        }
+
+        .bet-info-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            margin-top: 10px;
+        }
+
+        .total-bet, .my-bet {
+            width: 100%;
+            background-color: #4b2b1b;
+            border: 1px solid #724d35;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .my-bet {
+            margin-top: 5px;
+            color: #fff;
+        }
+        
+        .total-bet {
+            color: #ffd700;
+        }
+
+        .dice-area-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: #000;
+            border: 2px solid #b8860b;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .dice-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .dice-row {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .dice-image {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .dice-bowl {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 90%;
+            transform: translate(-50%, -50%);
+            background-image: url('bowl.png');
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease-in-out;
+            z-index: 5;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: yellow;
+        }
+        
+        .dice-bowl.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .message-display {
+            font-size: 1em;
+            font-weight: bold;
+            height: 20px;
+            margin-top: 10px;
+        }
+
+        .chips-container {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .chips-container.disabled .chip {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .chip {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-color: #e74c3c;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin: 0 3px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chip:hover {
+            transform: translateY(-3px);
+        }
+        
+        .chip:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .all-in-btn {
+            width: 100px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: #b8860b;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .all-in-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .all-in-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: none;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .control-btn {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .bet-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        #win-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 0.5s ease-out;
+            transform: translateY(10px);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        #win-amount.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .recharge-popup-overlay, .withdraw-popup-overlay, .withdraw-history-popup-overlay, .admin-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .recharge-popup-overlay.show, .withdraw-popup-overlay.show, .withdraw-history-popup-overlay.show, .admin-panel-overlay.show {
+            opacity: 1;
+        }
+        
+        .recharge-popup, .withdraw-popup, .withdraw-history-popup, .admin-panel {
+            background: linear-gradient(to bottom, #2b2b2b, #1e1e1e);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            border: 2px solid #555;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .recharge-popup h2, .withdraw-popup h2, .withdraw-history-popup h2, .admin-panel h2 {
+            margin-top: 0;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .recharge-popup .close-btn, .withdraw-popup .close-btn, .withdraw-history-popup .close-btn, .admin-panel .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .recharge-popup .close-btn:hover, .withdraw-popup .close-btn:hover, .withdraw-history-popup .close-btn:hover, .admin-panel .close-btn:hover {
+            color: #fff;
+        }
+
+        .recharge-form label, .withdraw-form label {
+            display: block;
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: left;
+            font-weight: bold;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .recharge-form select,
+        .recharge-form input,
+        .withdraw-form select,
+        .withdraw-form input,
+        .admin-control-group input,
+        .admin-control-group select {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            background-color: #383838;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 12px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .recharge-form input:focus,
+        .recharge-form select:focus,
+        .withdraw-form input:focus,
+        .withdraw-form select:focus,
+        .admin-control-group input:focus,
+        .admin-control-group select:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+
+        .recharge-form button, .withdraw-form button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .recharge-form button:hover, .withdraw-form button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(to bottom, #32d778, #2ecc71);
+        }
+
+        #recharge-message, #withdraw-message {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            height: 1.5em;
+        }
+
+        .admin-control-group {
+            margin-bottom: 20px;
+        }
+
+        .admin-control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ccc;
+        }
+        
+        .admin-control-group button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-money-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .reset-money-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Withdrawal Popup Specific Styles */
+        .withdraw-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .withdraw-tab-btn {
+            background: #444;
+            color: #aaa;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 8px 8px 0 0;
+            transition: background 0.3s, color 0.3s;
+            outline: none;
+        }
+        
+        .withdraw-tab-btn:hover {
+            background: #555;
+            color: #ccc;
+        }
+        
+        .withdraw-tab-btn.active {
+            background: #b8860b;
+            color: white;
+        }
+
+        .withdraw-form-container {
+            width: 100%;
+        }
+
+        .withdraw-form-container form {
+            display: none;
+        }
+        
+        .withdraw-form-container form.active {
+            display: block;
+        }
+
+        .bank-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .withdraw-history-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+        
+        .withdraw-history-btn:hover {
+            background-color: #777;
+        }
+        
+        /* New History Popup Styles */
+        .withdraw-history-popup {
+            background: linear-gradient(to bottom, #1e1e1e, #1a1a1a);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .withdraw-history-popup ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .withdraw-history-popup li {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            border-left: 5px solid transparent;
+        }
+
+        .withdraw-history-popup li.bank-withdrawal {
+            border-left-color: #2ecc71;
+        }
+
+        .withdraw-history-popup li.card-withdrawal {
+            border-left-color: #3498db;
+        }
+
+        .withdraw-history-popup .transaction-amount {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.2em;
+        }
+        
+        .withdraw-history-popup .transaction-details {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        
+        .withdraw-history-popup .transaction-time {
+            font-size: 0.8em;
+            color: #999;
+            align-self: flex-end;
+        }
+        
+        .card-management {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #383838;
+            border-radius: 10px;
+        }
+
+        .card-management h3 {
+            color: #ffd700;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .card-management table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            color: #ccc;
+            margin-top: 15px;
+        }
+
+        .card-management th, .card-management td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .card-management th {
+            background-color: #555;
+            color: white;
+        }
+
+        .card-management tr:nth-child(even) {
+            background-color: #444;
+        }
+
+        .card-management tr:hover {
+            background-color: #666;
+        }
+
+        .used {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .unused {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+    </style>
+</head>
+</div>
+<body>
+	<div id="game-container">
+	
+	<audio id="bg-music" loop>
+  <source src="chill.mp3" type="audio/mpeg">
+</audio>
+
+    <!-- Thanh trên cùng sửa lại -->
+<div class="main-top-bar">
+  <!-- Bên trái: avatar + tên -->
+  <div class="profile">
+    <img src="profile-pic.png" alt="Profile" class="profile-pic">
+    <span class="profile-name">no_5tl_5</span>
+  </div>
+
+  <!-- Giữa: số dư + nút nạp -->
+  <div class="balance-display">
+    <span class="icon">$</span>
+    <span id="balance-label-main" class="amount">1,000,000</span>
+    <button class="add-btn" onclick="openRechargePopup()">+</button>
+  </div>
+
+  <!-- Bên phải: các nút chức năng -->
+  <div class="topbar-actions">
+    <button class="music-btn" id="music-toggle-btn" onclick="toggleMusic()">🔊</button>
+    <button class="news-btn">📰</button>
+    <button class="logout-btn" onclick="logout()">⎋</button>
+    <button class="admin-btn" id="admin-panel-btn" onclick="goToAdminPanel()">⚙</button>
+  </div>
+</div>
+
+
+        </div>
+    </div>
+    
+  <div id="poster" onclick="startGame()" style="margin-top:70px; cursor:pointer;">
+  <img src="your-game-poster.png" alt="Poster" style="
+ max-width: 250px;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;">
+</div>
+
+<a href="baccarat.html" style="text-decoration: none;">
+  <div id="poster" style="margin-top:70px; cursor:pointer;">
+    <img src="bcr.jpg" alt="Poster" style="
+   max-width: 250px;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;">
+  </div>
+</a>
+
+    </div>
+
+    
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="game-container">
+            <div class="popup-drag-handle"></div>
+            <span class="close-btn" onclick="closeGamePopup()">&times;</span>
+            
+            <div class="history-container" id="history-container">
+            </div>
+
+            <div class="game-area">
+                <div class="bet-section tai-section" onclick="selectBetArea('tai')">
+                    <span class="bet-label tai"><img id="tai-img" src="Screenshot_20250822-045044.png" alt="Tai"></span>
+                    <div class="bet-info-container">
+                        <span id="total-bet-tai" class="total-bet">0 VND</span>
+                        <span id="my-bet-tai" class="my-bet">0 VND</span>
+                    </div>
+                </div>
+                <div class="dice-area-wrapper">
+                    <div class="dice-container" id="dice-container">
+                        <div class="dice-row">
+                            <img id="dice1" class="dice-image" src="dice1.png" alt="Dice 1">
+                            <img id="dice2" class="dice-image" src="dice2.png" alt="Dice 2">
+                        </div>
+                        <img id="dice3" class="dice-image" src="dice3.png" alt="Dice 3">
+                    </div>
+                    <div class="dice-bowl" id="dice-bowl">
+                        <span class="timer-on-bowl" id="timer-on-bowl">10</span>
+                    </div>
+                </div>
+                <div class="bet-section xiu-section" onclick="selectBetArea('xiu')">
+                    <span class="bet-label xiu"><img id="xiu-img" src="Screenshot_20250822-050256.png" alt="Xiu"></span>
+                    <div class="bet-info-container">
+                        <span id="total-bet-xiu" class="total-bet">0 VND</span>
+                        <span id="my-bet-xiu" class="my-bet">0 VND</span>
+                    </div>
+                </div>
+            </div>
+<button class="history-btn" onclick="openHistory()">Lịch sử cầu</button>
+
+            <div class="message-display">
+                <span id="game-message">Chọn mệnh giá và đặt cược!</span>
+            </div>
+            
+            <div id="win-amount">+0 VND</div>
+
+            <div class="chips-container" id="chips-container">
+                <button class="chip" data-value="1000">1K</button>
+                <button class="chip" data-value="5000">5K</button>
+                <button class="chip" data-value="10000">10K</button>
+                <button class="chip" data-value="50000">50K</button>
+                <button class="chip" data-value="100000">100K</button>
+                <button class="chip" data-value="500000">500K</button>
+                <button class="all-in-btn" onclick="allIn()">ALL IN</button>
+            </div>
+        </div>
+    </div>
+    
+<div id="history-popup" class="popup-overlay" style="display:none;">
+  <div class="popup-content">
+    <button class="close-btn" onclick="closeHistory()">&times;</button>
+    <h2>Lịch sử cầu</h2>
+    <div id="history-items-container"></div>
+  </div>
+</div>
+
+    <div class="recharge-popup-overlay" id="recharge-popup-overlay">
+        <div class="recharge-popup">
+            <span class="close-btn" onclick="closeRechargePopup()">&times;</span>
+            <h2>NẠP TIỀN BẰNG THẺ CÀO</h2>
+            <form id="recharge-form" onsubmit="return false;">
+                <label for="card-type">Loại thẻ</label>
+                <select id="card-type" name="card-type">
+                    <option value="viettel">Viettel</option>
+                    <option value="mobifone">Mobifone</option>
+                    <option value="vinaphone">Vinaphone</option>
+                </select>
+
+                <label for="card-value">Mệnh giá</label>
+                <select id="card-value" name="card-value">
+                    <option value="10000">10,000 VND</option>
+                    <option value="20000">20,000 VND</option>
+                    <option value="50000">50,000 VND</option>
+                    <option value="100000">100,000 VND</option>
+                    <option value="200000">200,000 VND</option>
+                    <option value="500000">500,000 VND</option>
+                </select>
+
+                <label for="card-serial">Số Serial</label>
+                <input type="text" id="card-serial" name="card-serial" placeholder="Nhập số Serial" required>
+                
+                <label for="card-code">Mã thẻ</label>
+                <input type="text" id="card-code" name="card-code" placeholder="Nhập mã thẻ" required>
+                
+                <button type="submit" onclick="processRecharge()">Xác nhận</button>
+            </form>
+            <div id="recharge-message"></div>
+        </div>
+    </div>
+
+    <div class="withdraw-popup-overlay" id="withdraw-popup-overlay">
+        <div class="withdraw-popup">
+            <span class="close-btn" onclick="closeWithdrawPopup()">&times;</span>
+            <h2>RÚT TIỀN</h2>
+            
+            <div class="withdraw-tabs">
+                <button class="withdraw-tab-btn active" data-tab="bank">Ngân hàng</button>
+                <button class="withdraw-tab-btn" data-tab="card">Thẻ cào</button>
+            </div>
+
+            <div class="withdraw-form-container">
+                <form id="bank-form" class="active" onsubmit="return false;">
+                    <label for="bank-withdraw-amount">Số tiền muốn rút</label>
+                    <input type="number" id="bank-withdraw-amount" name="bank-withdraw-amount" placeholder="Nhập số tiền" required min="1000">
+                    
+                    <div class="bank-form-group">
+                        <label for="bank-account">Số tài khoản</label>
+                        <input type="text" id="bank-account" name="bank-account" placeholder="Nhập số tài khoản" required>
+                        
+                        <label for="bank-name">Tên ngân hàng</label>
+                        <input type="text" id="bank-name" name="bank-name" placeholder="Nhập tên ngân hàng" required>
+                        
+                        <label for="bank-holder-name">Tên chủ tài khoản</label>
+                        <input type="text" id="bank-holder-name" name="bank-holder-name" placeholder="Nhập tên chủ tài khoản" required>
+                    </div>
+
+                    <button type="submit" onclick="processWithdrawal('bank')">Xác nhận</button>
+                </form>
+                
+                <form id="card-form" onsubmit="return false;">
+                    <label for="card-withdraw-amount">Số tiền muốn rút</label>
+                    <input type="number" id="card-withdraw-amount" name="card-withdraw-amount" placeholder="Nhập số tiền" required min="10000" step="10000">
+
+                    <label for="card-withdraw-type">Loại thẻ</label>
+                    <select id="card-withdraw-type" name="card-withdraw-type">
+                        <option value="viettel">Viettel</option>
+                        <option value="mobifone">Mobifone</option>
+                        <option value="vinaphone">Vinaphone</option>
+                    </select>
+
+                    <button type="submit" onclick="processWithdrawal('card')">Xác nhận</button>
+                </form>
+            </div>
+            <div id="withdraw-message"></div>
+            <button class="withdraw-history-btn" onclick="openWithdrawalHistoryPopup()">Lịch sử</button>
+        </div>
+    </div>
+    
+    <div class="withdraw-history-popup-overlay" id="withdraw-history-popup-overlay">
+        <div class="withdraw-history-popup">
+            <span class="close-btn" onclick="closeWithdrawalHistoryPopup()">&times;</span>
+            <h2>LỊCH SỬ RÚT TIỀN</h2>
+            <ul id="withdraw-history-list">
+                </ul>
+        </div>
+    </div>
+    
+    <div class="admin-panel-overlay" id="admin-panel-overlay">
+        <div class="admin-panel">
+            <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
+            <h2>ADMIN PANEL</h2>
+            <div class="admin-control-group">
+                <label for="add-money-input">Thêm tiền</label>
+                <input type="number" id="add-money-input" placeholder="Nhập số tiền cần thêm">
+                <button class="add-money-btn" onclick="addMoney()">Xác nhận</button>
+            </div>
+            <div class="admin-control-group">
+                <button class="reset-money-btn" onclick="resetBalance()">Reset tiền về 1,000,000 VND</button>
+            </div>
+
+            <div class="card-management">
+                <h3>Thêm thẻ cào</h3>
+                <div class="admin-control-group">
+                    <label for="admin-card-value">Mệnh giá</label>
+                    <select id="admin-card-value" name="admin-card-value">
+                        <option value="10000">10,000 VND</option>
+                        <option value="20000">20,000 VND</option>
+                        <option value="50000">50,000 VND</option>
+                        <option value="100000">100,000 VND</option>
+                        <option value="200000">200,000 VND</option>
+                        <option value="500000">500,000 VND</option>
+                    </select>
+
+                    <label for="admin-card-serial">Số Serial</label>
+                    <input type="text" id="admin-card-serial" placeholder="Nhập số Serial">
+                    
+                    <label for="admin-card-code">Mã thẻ</label>
+                    <input type="text" id="admin-card-code" placeholder="Nhập mã thẻ">
+                    
+                    <button class="add-money-btn" onclick="addCard()">Thêm thẻ</button>
+                </div>
+
+                <h3>Danh sách thẻ cào</h3>
+                <table id="card-list-table">
+                    <thead>
+                        <tr>
+                            <th>Mệnh giá</th>
+                            <th>Serial</th>
+                            <th>Mã thẻ</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+	function updateDisplay() {
+    document.getElementById('profile-name').innerText = currentUser.name;
+    document.getElementById('balance-label-main').innerText = currentUser.balance.toLocaleString('vi-VN');
+}
+	function updateUserOnServer(user) {
+    fetch(`${apiUrl}/update-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    });
+}
+    // Hàm này sẽ được gọi khi trang tải
+    window.onload = function() {
+    fetch(`${apiUrl}/users`)
+        .then(response => response.json())
+        .then(users => {
+            // Xử lý dữ liệu người dùng ở đây
+            // Ví dụ: tìm người dùng hiện tại và cập nhật giao diện
+        });
+};
+        // Kiểm tra xem đã có tiền trong localStorage chưa
+        if (localStorage.getItem('balance-Label-Main') === null) {
+            // Nếu chưa có, đặt giá trị ban đầu là 1,000,000 VND
+            localStorage.setItem('balance-Label-Main', 1000000);
+        }
+        // Cập nhật số tiền hiển thị
+        updateBalanceDisplay();
+    };
+
+    // Hàm cập nhật số tiền trên giao diện
+    function updateBalanceDisplay() {
+        const balance = localStorage.getItem('userBalance');
+        document.getElementById('balance-label-main').innerText = formatCurrency(balance);
+    }
+
+    // Hàm định dạng số tiền cho dễ đọc
+    function formatCurrency(amount) {
+        return parseInt(amount).toLocaleString('vi-VN');
+    }
+
+    // Phần còn lại của các hàm game, ví dụ:
+    function openRechargePopup() {
+        // ... (giữ nguyên logic của bạn)
+    }
+    
+	function updateMainHistory() {
+    const mainHistoryContainer = document.getElementById("main-history-container");
+    mainHistoryContainer.innerHTML = ''; // Xóa nội dung cũ
+    
+    // Tạo lịch sử ảo gồm 20 kết quả
+    const fakeHistory = generateFakeHistory(20); 
+    
+    fakeHistory.forEach(result => {
+        const img = document.createElement('img');
+        if (result === 'tai') {
+            img.src = 'tai.png';
+            img.alt = 'Tài';
+        } else {
+            img.src = 'xiu.png';
+            img.alt = 'Xỉu';
+        }
+        mainHistoryContainer.appendChild(img);
+    });
+}
+
+// Hàm này để tạo lịch sử ảo
+function generateFakeHistory(length) {
+    const history = [];
+    const results = ['tai', 'xiu'];
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * results.length);
+        history.push(results[randomIndex]);
+    }
+    return history;
+}
+	function closeHistory() {
+  document.getElementById("history-popup").style.display = "none";
+}
+	let fakeHistory = [];
+
+function generateFakeHistory() {
+  fakeHistory = [];
+  const options = ["Tài", "Xỉu"];
+  for (let i = 0; i < 20; i++) {
+    const result = options[Math.floor(Math.random() * options.length)];
+    fakeHistory.push(result);
+  }
+}
+
+function openHistory() {
+  const historyContainer = document.getElementById("history-items-container");
+  historyContainer.innerHTML = ''; // Xóa nội dung cũ
+  
+  // Lấy 15 kết quả gần nhất, đảo ngược để kết quả mới nhất ở cuối
+  const recentHistory = gameHistory.slice(-15);
+  
+  recentHistory.forEach(result => {
+    const img = document.createElement('img');
+    if (result === 'tai') {
+      img.src = 'tai.png';
+      img.alt = 'Tài';
+    } else {
+      img.src = 'xiu.png';
+      img.alt = 'Xỉu';
+    }
+    historyContainer.appendChild(img);
+  });
+  
+  // Hiển thị popup
+  document.getElementById("history-popup").style.display = "flex";
+}
+
+	function openGamePopup() {
+  document.getElementById("popup-overlay").style.display = "flex";
+}
+
+function closePopup() {
+  document.getElementById("popup-overlay").style.display = "none";
+}
+
+  const bgMusic = document.getElementById("bg-music");
+
+  function startGame() {
+    // mở popup game nếu có
+    openGamePopup();
+
+    // phát nhạc khi click poster
+    if (bgMusic.paused) {
+      bgMusic.play().catch(err => console.log("Autoplay bị chặn:", err));
+    }
+  }
+  
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+                alert('Vui lòng đăng nhập để chơi game!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const profileNameEl = document.querySelector('.profile-name');
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                profileNameEl.textContent = loggedInUser;
+            } else {
+                profileNameEl.textContent = 'Khách';
+            }
+
+            const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+            if (isAdmin) {
+                document.getElementById('admin-panel-btn').style.display = 'block';
+            }
+
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+            if (users[loggedInUser] && users[loggedInUser].balance !== undefined) {
+                balance = users[loggedInUser].balance;
+            } else {
+                balance = 1000000;
+                users[loggedInUser] = users[loggedInUser] || {};
+                users[loggedInUser].balance = balance;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            updateDisplay();
+            startGameLoop();
+        });
+    
+        let balance = 0;
+        let myBetOnTai = 0;
+        let myBetOnXiu = 0;
+        let totalBetOnTai = 0;
+        let totalBetOnXiu = 0;
+        let betChoice = 'tai';
+        let gameHistory = [];
+        let diceResult = {}; 
+        let isPopupDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        let startX = 0;
+        let startY = 0;
+        let initialTransformX = 0;
+        let initialTransformY = 0;
+
+        const balanceLabelMain = document.getElementById('balance-label-main');
+        const gameMessage = document.getElementById('game-message');
+        const timerOnBowl = document.getElementById('timer-on-bowl');
+        const diceContainer = document.getElementById('dice-container');
+        const dice1Img = document.getElementById('dice1');
+        const dice2Img = document.getElementById('dice2');
+        const dice3Img = document.getElementById('dice3');
+        const winAmountDisplay = document.getElementById('win-amount');
+        const totalBetTaiDisplay = document.getElementById('total-bet-tai');
+        const myBetTaiDisplay = document.getElementById('my-bet-tai');
+        const totalBetXiuDisplay = document.getElementById('total-bet-xiu');
+        const myBetXiuDisplay = document.getElementById('my-bet-xiu');
+        const chipsContainer = document.getElementById('chips-container');
+        const chips = document.querySelectorAll('.chip');
+        const taiSection = document.querySelector('.tai-section');
+        const xiuSection = document.querySelector('.xiu-section');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const gameContainer = document.querySelector('.game-container');
+        const popupDragHandle = document.querySelector('.popup-drag-handle');
+        const diceBowl = document.getElementById('dice-bowl');
+        const historyContainer = document.getElementById('history-container');
+        const taiImg = document.getElementById('tai-img');
+        const xiuImg = document.getElementById('xiu-img');
+        const rechargePopupOverlay = document.getElementById('recharge-popup-overlay');
+        const rechargeMessage = document.getElementById('recharge-message');
+        const cardValueSelect = document.getElementById('card-value');
+        const adminPanelOverlay = document.getElementById('admin-panel-overlay');
+        const addMoneyInput = document.getElementById('add-money-input');
+        const withdrawPopupOverlay = document.getElementById('withdraw-popup-overlay');
+        const withdrawMessage = document.getElementById('withdraw-message');
+        const withdrawHistoryList = document.getElementById('withdraw-history-list');
+        const withdrawHistoryPopupOverlay = document.getElementById('withdraw-history-popup-overlay');
+        const withdrawTabBtns = document.querySelectorAll('.withdraw-tab-btn');
+        const bankForm = document.getElementById('bank-form');
+        const cardForm = document.getElementById('card-form');
+        const adminCardValueSelect = document.getElementById('admin-card-value');
+        const adminCardSerialInput = document.getElementById('admin-card-serial');
+        const adminCardCodeInput = document.getElementById('admin-card-code');
+        const cardListTableBody = document.querySelector('#card-list-table tbody');
+
+        let isBettingPhase = true;
+        let timerSeconds = 10;
+        let isBowlDraggable = false;
+        let gameLoopInterval;
+        let resultChecked = false;
+
+        let bowlDragging = false;
+        let bowlStartX = 0;
+        let bowlStartY = 0;
+        let bowlInitialX = 0;
+        let bowlInitialY = 0;
+        
+        const REVEAL_THRESHOLD = -20;
+        const REMOVE_THRESHOLD = -100;
+
+        function updateDisplay() {
+            balanceLabelMain.textContent = balance.toLocaleString('vi-VN') + ' VND';
+            if (popupOverlay.style.display === 'flex') {
+                totalBetTaiDisplay.textContent = totalBetOnTai.toLocaleString('vi-VN') + ' VND';
+                myBetTaiDisplay.textContent = myBetOnTai.toLocaleString('vi-VN') + ' VND';
+                totalBetXiuDisplay.textContent = totalBetOnXiu.toLocaleString('vi-VN') + ' VND';
+                myBetXiuDisplay.textContent = myBetOnXiu.toLocaleString('vi-VN') + ' VND';
+            }
+        }
+
+        function updateGameUI() {
+            if (popupOverlay.style.display !== 'flex') {
+                return;
+            }
+
+            if (isBettingPhase) {
+                gameMessage.textContent = 'Chọn mệnh giá và đặt cược!';
+                timerOnBowl.textContent = timerSeconds;
+                diceBowl.style.display = 'flex';
+                diceContainer.style.opacity = '0';
+                diceBowl.style.transform = `translate(-50%, -50%)`;
+                diceBowl.style.cursor = 'grab';
+                taiSection.classList.remove('disabled');
+                xiuSection.classList.remove('disabled');
+                chipsContainer.classList.remove('disabled');
+                diceBowl.classList.remove('disabled');
+                winAmountDisplay.classList.remove('show');
+            } else {
+                gameMessage.textContent = 'Hết giờ. Kéo bát để xem!';
+                timerOnBowl.textContent = timerSeconds;
+                diceBowl.style.cursor = 'grab';
+                diceBowl.classList.remove('disabled');
+                chipsContainer.classList.add('disabled');
+                taiSection.classList.add('disabled');
+                xiuSection.classList.add('disabled');
+            }
+            updateHistoryDisplay();
+            updateDisplay();
+        }
+        
+        function updateHistoryDisplay() {
+            if (popupOverlay.style.display !== 'flex') {
+                return;
+            }
+            historyContainer.innerHTML = '';
+            const last10Results = gameHistory.slice(-10);
+            last10Results.forEach(result => {
+                const dot = document.createElement('div');
+                dot.classList.add('history-item');
+                dot.classList.add(result);
+                historyContainer.appendChild(dot);
+            });
+        }
+        
+        function generateInitialHistory() {
+            if (gameHistory.length === 0) {
+                for (let i = 0; i < 10; i++) {
+                    const total = Math.floor(Math.random() * 16) + 3;
+                    let result = total >= 11 ? 'tai' : 'xiu';
+                    gameHistory.push(result);
+                }
+            }
+        }
+
+        function runGameRound() {
+            isBettingPhase = true;
+            timerSeconds = 10;
+            isBowlDraggable = true;
+            resultChecked = false;
+            myBetOnTai = 0;
+            myBetOnXiu = 0;
+            totalBetOnTai = 0;
+            totalBetOnXiu = 0;
+            diceResult = {};
+            
+            updateGameUI();
+            
+            if (gameLoopInterval) {
+                clearInterval(gameLoopInterval);
+            }
+
+            gameLoopInterval = setInterval(() => {
+                timerSeconds--;
+                if (popupOverlay.style.display === 'flex') {
+                    timerOnBowl.textContent = timerSeconds;
+                }
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(gameLoopInterval);
+                    isBettingPhase = false;
+                    isBowlDraggable = true;
+                    
+                    diceResult = {
+                        dice1: Math.floor(Math.random() * 6) + 1,
+                        dice2: Math.floor(Math.random() * 6) + 1,
+                        dice3: Math.floor(Math.random() * 6) + 1,
+                    };
+                    
+                    if (popupOverlay.style.display === 'flex') {
+                        gameMessage.textContent = 'Hết giờ. Kéo bát để xem!';
+                        dice1Img.src = `dice${diceResult.dice1}.png`;
+                        dice2Img.src = `dice${diceResult.dice2}.png`;
+                        dice3Img.src = `dice${diceResult.dice3}.png`;
+
+                        chipsContainer.classList.add('disabled');
+                        taiSection.classList.add('disabled');
+                        xiuSection.classList.add('disabled');
+                    }
+                }
+            }, 1000);
+        }
+
+        function checkResult() {
+            if (resultChecked) return;
+            resultChecked = true;
+
+            const total = diceResult.dice1 + diceResult.dice2 + diceResult.dice3;
+            let winAmount = 0;
+            let message = '';
+            let result = '';
+
+            let winnings = 0;
+            let losses = 0;
+
+            if (diceResult.dice1 === diceResult.dice2 && diceResult.dice2 === diceResult.dice3) {
+                message = `Kết quả: Bão (Tổng ${total}). Bạn thua hết!`;
+                losses = myBetOnTai + myBetOnXiu;
+                winAmount = -losses;
+                result = 'xiu';
+            } else if (total >= 11) {
+                result = 'tai';
+                if (myBetOnTai > 0) {
+                    winnings = myBetOnTai * 1.95;
+                    losses = myBetOnXiu;
+                    winAmount = myBetOnTai * 0.95;
+                    message = `Kết quả: TÀI (Tổng ${total}). Bạn thắng!`;
+                }
+                if (myBetOnXiu > 0) {
+                    losses += myBetOnXiu;
+                    if (myBetOnTai > 0) message += ` Bạn thua cược Xỉu!`;
+                    else message = `Kết quả: TÀI (Tổng ${total}). Bạn thua cược Xỉu!`;
+                }
+                if (myBetOnTai > 0 && myBetOnXiu > 0) {
+                    message = `Kết quả: TÀI (Tổng ${total}). Bạn thắng cược Tài, thua cược Xỉu.`;
+                    winAmount = (myBetOnTai * 0.95) - myBetOnXiu;
+                }
+                if (myBetOnTai === 0 && myBetOnXiu === 0) {
+                    message = `Kết quả: TÀI (Tổng ${total}).`;
+                }
+            } else {
+                result = 'xiu';
+                if (myBetOnXiu > 0) {
+                    winnings = myBetOnXiu * 1.95;
+                    losses = myBetOnTai;
+                    winAmount = myBetOnXiu * 0.95;
+                    message = `Kết quả: XỈU (Tổng ${total}). Bạn thắng!`;
+                }
+                if (myBetOnTai > 0) {
+                    losses += myBetOnTai;
+                    if (myBetOnXiu > 0) message += ` Bạn thua cược Tài!`;
+                    else message = `Kết quả: XỈU (Tổng ${total}). Bạn thua cược Tài!`;
+                }
+                if (myBetOnXiu > 0 && myBetOnTai > 0) {
+                    message = `Kết quả: XỈU (Tổng ${total}). Bạn thắng cược Xỉu, thua cược Tài.`;
+                    winAmount = (myBetOnXiu * 0.95) - myBetOnTai;
+                }
+                if (myBetOnXiu === 0) {
+                    message = `Kết quả: XỈU (Tổng ${total}).`;
+                }
+            }
+            
+            balance += (winnings - losses);
+            balance = Math.max(0, balance);
+
+            gameHistory.push(result);
+            if (gameHistory.length > 10) {
+                gameHistory.shift();
+            }
+
+            if (popupOverlay.style.display === 'flex') {
+                gameMessage.textContent = message;
+                winAmountDisplay.textContent = (winAmount >= 0 ? '+' : '') + winAmount.toLocaleString('vi-VN') + ' VND';
+                winAmountDisplay.classList.add('show');
+                winAmountDisplay.style.color = winAmount >= 0 ? '#2ecc71' : '#c0392b';
+                
+                taiImg.src = (result === 'tai') ? 'tai_win.png' : 'tai_loss.png';
+                xiuImg.src = (result === 'xiu') ? 'xiu_win.png' : 'xiu_loss.png';
+
+                setTimeout(() => {
+                    winAmountDisplay.classList.remove('show');
+                    taiImg.src = 'Screenshot_20250822-045044.png';
+                    xiuImg.src = 'Screenshot_20250822-050256.png';
+                }, 4000);
+            }
+
+            const users = JSON.parse(localStorage.getItem('users'));
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (users && users[loggedInUser]) {
+                users[loggedInUser].balance = balance;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            if (balance === 0) {
+                alert("Bạn đã hết tiền! Vui lòng nạp thêm để tiếp tục chơi.");
+            }
+            
+            updateDisplay();
+            setTimeout(runGameRound, 5000);
+        }
+
+        function selectBetArea(choice) {
+            if (!isBettingPhase || popupOverlay.style.display !== 'flex') return;
+            betChoice = choice;
+            taiSection.classList.remove('selected');
+            xiuSection.classList.remove('selected');
+            
+            if (choice === 'tai') {
+                taiSection.classList.add('selected');
+            } else {
+                xiuSection.classList.add('selected');
+            }
+        }
+        
+        function allIn() {
+            if (!isBettingPhase || popupOverlay.style.display !== 'flex') {
+                alert('Đã hết thời gian đặt cược!');
+                return;
+            }
+            if (balance > 0) {
+                const amountToBet = balance;
+                if (betChoice === 'tai') {
+                    myBetOnTai += amountToBet;
+                    totalBetOnTai += amountToBet;
+                } else if (betChoice === 'xiu') {
+                    myBetOnXiu += amountToBet;
+                    totalBetOnXiu += amountToBet;
+                }
+                balance = 0;
+                updateDisplay();
+            } else {
+                alert('Bạn không còn tiền để đặt cược!');
+            }
+        }
+
+        diceBowl.addEventListener('mousedown', (e) => {
+            if (!isBowlDraggable || isBettingPhase || popupOverlay.style.display !== 'flex') return;
+            e.preventDefault();
+            bowlDragging = true;
+            bowlStartX = e.clientX;
+            bowlStartY = e.clientY;
+            
+            const transform = window.getComputedStyle(diceBowl).getPropertyValue('transform');
+            const matrix = new DOMMatrix(transform);
+            bowlInitialX = matrix.e;
+            bowlInitialY = matrix.f;
+            
+            diceBowl.style.transition = 'none';
+            diceBowl.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (bowlDragging && popupOverlay.style.display === 'flex') {
+                const deltaX = e.clientX - bowlStartX;
+                const deltaY = e.clientY - bowlStartY;
+                const currentX = bowlInitialX + deltaX;
+                const currentY = bowlInitialY + deltaY;
+
+                diceBowl.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+                if (currentY < 0) {
+                    const opacity = Math.min(1, Math.abs(currentY / REVEAL_THRESHOLD));
+                    diceContainer.style.opacity = opacity;
+                } else {
+                    diceContainer.style.opacity = '0';
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (bowlDragging && popupOverlay.style.display === 'flex') {
+                bowlDragging = false;
+                diceBowl.style.transition = 'transform 0.3s ease-in-out';
+                diceBowl.style.cursor = 'grab';
+                
+                const transform = window.getComputedStyle(diceBowl).getPropertyValue('transform');
+                const matrix = new DOMMatrix(transform);
+                
+                if (matrix.f < REMOVE_THRESHOLD) {
+                    diceBowl.style.display = 'none';
+                    isBowlDraggable = false;
+                    checkResult();
+                } else {
+                    diceBowl.style.transform = `translate(-50%, -50%)`;
+                    diceContainer.style.opacity = '0';
+                }
+            }
+        });
+        
+        diceBowl.addEventListener('touchstart', (e) => {
+            if (!isBowlDraggable || isBettingPhase || popupOverlay.style.display !== 'flex') return;
+            e.preventDefault();
+            bowlDragging = true;
+            bowlStartX = e.touches[0].clientX;
+            bowlStartY = e.touches[0].clientY;
+            
+            const transform = window.getComputedStyle(diceBowl).getPropertyValue('transform');
+            const matrix = new DOMMatrix(transform);
+            bowlInitialX = matrix.e;
+            bowlInitialY = matrix.f;
+            
+            diceBowl.style.transition = 'none';
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (bowlDragging && popupOverlay.style.display === 'flex') {
+                e.preventDefault();
+                const deltaX = e.touches[0].clientX - bowlStartX;
+                const deltaY = e.touches[0].clientY - bowlStartY;
+                const currentX = bowlInitialX + deltaX;
+                const currentY = bowlInitialY + deltaY;
+                
+                diceBowl.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                
+                if (currentY < 0) {
+                    const opacity = Math.min(1, Math.abs(currentY / REVEAL_THRESHOLD));
+                    diceContainer.style.opacity = opacity;
+                } else {
+                    diceContainer.style.opacity = '0';
+                }
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (bowlDragging && popupOverlay.style.display === 'flex') {
+                bowlDragging = false;
+                diceBowl.style.transition = 'transform 0.3s ease-in-out';
+                
+                const transform = window.getComputedStyle(diceBowl).getPropertyValue('transform');
+                const matrix = new DOMMatrix(transform);
+
+                if (matrix.f < REMOVE_THRESHOLD) {
+                    diceBowl.style.display = 'none';
+                    isBowlDraggable = false;
+                    checkResult();
+                } else {
+                    diceBowl.style.transform = `translate(-50%, -50%)`;
+                    diceContainer.style.opacity = '0';
+                }
+            }
+        });
+
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                if (!isBettingPhase || popupOverlay.style.display !== 'flex') {
+                    alert('Đã hết thời gian đặt cược!');
+                    return;
+                }
+                const value = parseInt(chip.dataset.value);
+
+                if (balance >= value) {
+                    if (betChoice === 'tai') {
+                        myBetOnTai += value;
+                        totalBetOnTai += value;
+                    } else if (betChoice === 'xiu') {
+                        myBetOnXiu += value;
+                        totalBetOnXiu += value;
+                    }
+                    balance -= value;
+                    updateDisplay();
+                } else {
+                    alert('Số tiền cược vượt quá số dư!');
+                }
+            });
+        });
+
+        // POPUP DRAGGING
+        popupDragHandle.addEventListener('mousedown', (e) => {
+            isPopupDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const transform = window.getComputedStyle(gameContainer).getPropertyValue('transform');
+            const matrix = new DOMMatrix(transform);
+            initialTransformX = matrix.e;
+            initialTransformY = matrix.f;
+            gameContainer.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isPopupDragging) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                const newX = initialTransformX + deltaX;
+                const newY = initialTransformY + deltaY;
+                gameContainer.style.transform = `translate(${newX}px, ${newY}px)`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isPopupDragging = false;
+            gameContainer.style.transition = 'transform 0.3s ease-in-out';
+        });
+
+        popupDragHandle.addEventListener('touchstart', (e) => {
+            isPopupDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            const transform = window.getComputedStyle(gameContainer).getPropertyValue('transform');
+            const matrix = new DOMMatrix(transform);
+            initialTransformX = matrix.e;
+            initialTransformY = matrix.f;
+            gameContainer.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isPopupDragging) {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - startX;
+                const deltaY = touch.clientY - startY;
+                const newX = initialTransformX + deltaX;
+                const newY = initialTransformY + deltaY;
+                gameContainer.style.transform = `translate(${newX}px, ${newY}px)`;
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isPopupDragging = false;
+            gameContainer.style.transition = 'transform 0.3s ease-in-out';
+        });
+        
+        function openRechargePopup() {
+            hideAllPopups();
+            rechargePopupOverlay.style.display = 'flex';
+            setTimeout(() => {
+                rechargePopupOverlay.classList.add('show');
+            }, 10);
+        }
+
+        function processRecharge() {
+            const cardValue = parseInt(cardValueSelect.value);
+            
+            balance += cardValue;
+            updateDisplay();
+
+            rechargeMessage.textContent = `Nạp thành công ${cardValue.toLocaleString('vi-VN')} VND!`;
+            rechargeMessage.style.color = '#2ecc71';
+            
+            updateBalanceInLocalStorage();
+
+            setTimeout(() => {
+                closeRechargePopup();
+                rechargeMessage.textContent = '';
+            }, 2000);
+        }
+
+        function closeRechargePopup() {
+            rechargePopupOverlay.classList.remove('show');
+            setTimeout(() => {
+                rechargePopupOverlay.style.display = 'none';
+            }, 300);
+        }
+        
+        // SWITCH TABS FOR WITHDRAWAL
+        withdrawTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                withdrawTabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.withdraw-form-container form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                document.getElementById(`${tab}-form`).classList.add('active');
+            });
+        });
+
+        function openWithdrawPopup() {
+            hideAllPopups();
+            withdrawPopupOverlay.style.display = 'flex';
+            setTimeout(() => {
+                withdrawPopupOverlay.classList.add('show');
+            }, 10);
+        }
+
+        function closeWithdrawPopup() {
+            withdrawPopupOverlay.classList.remove('show');
+            setTimeout(() => {
+                withdrawPopupOverlay.style.display = 'none';
+                document.getElementById('bank-withdraw-amount').value = '';
+                document.getElementById('card-withdraw-amount').value = '';
+                withdrawMessage.textContent = '';
+            }, 300);
+        }
+        
+        function processWithdrawal(type) {
+            let amount;
+            let transactionDetails = {};
+
+            if (type === 'bank') {
+                amount = parseInt(document.getElementById('bank-withdraw-amount').value);
+                const bankAccount = document.getElementById('bank-account').value;
+                const bankName = document.getElementById('bank-name').value;
+                const bankHolderName = document.getElementById('bank-holder-name').value;
+                
+                if (!bankAccount || !bankName || !bankHolderName) {
+                    withdrawMessage.textContent = 'Vui lòng điền đủ thông tin ngân hàng!';
+                    withdrawMessage.style.color = '#c0392b';
+                    return;
+                }
+                
+                if (isNaN(amount) || amount <= 0 || balance < amount) {
+                    withdrawMessage.textContent = 'Số tiền rút không hợp lệ!';
+                    withdrawMessage.style.color = '#c0392b';
+                    return;
+                }
+                
+                transactionDetails.type = 'Ngân hàng';
+                transactionDetails.bankAccount = bankAccount;
+                transactionDetails.bankName = bankName;
+                transactionDetails.bankHolderName = bankHolderName;
+                
+                balance -= amount;
+                updateBalanceInLocalStorage();
+
+                withdrawMessage.textContent = `Yêu cầu rút ${amount.toLocaleString('vi-VN')} VND thành công!`;
+                withdrawMessage.style.color = '#2ecc71';
+                
+            } else if (type === 'card') {
+                amount = parseInt(document.getElementById('card-withdraw-amount').value);
+                
+                if (isNaN(amount) || amount <= 0 || balance < amount) {
+                    withdrawMessage.textContent = 'Số tiền rút không hợp lệ!';
+                    withdrawMessage.style.color = '#c0392b';
+                    return;
+                }
+                
+                const cardType = document.getElementById('card-withdraw-type').value;
+
+                let scratchCards = JSON.parse(localStorage.getItem('scratchCards')) || [];
+                const availableCardIndex = scratchCards.findIndex(card => card.value === amount && !card.isUsed);
+
+                if (availableCardIndex === -1) {
+                    withdrawMessage.textContent = 'Không có thẻ cào phù hợp để rút!';
+                    withdrawMessage.style.color = '#c0392b';
+                    return;
+                }
+
+                const cardToIssue = scratchCards[availableCardIndex];
+                cardToIssue.isUsed = true;
+                localStorage.setItem('scratchCards', JSON.stringify(scratchCards));
+                
+                balance -= amount;
+                updateBalanceInLocalStorage();
+
+                transactionDetails.type = 'Thẻ cào';
+                transactionDetails.cardType = cardType;
+                transactionDetails.cardSerialAndCode = `${cardToIssue.serial} - ${cardToIssue.code}`;
+                
+                withdrawMessage.innerHTML = `Rút thành công! <br> Serial: ${cardToIssue.serial} <br> Code: ${cardToIssue.code}`;
+                withdrawMessage.style.color = '#2ecc71';
+            }
+            
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            const users = JSON.parse(localStorage.getItem('users'));
+            const withdrawalHistory = users[loggedInUser].withdrawalHistory || [];
+            
+            const newTransaction = {
+                amount: amount,
+                timestamp: new Date().toLocaleString('vi-VN'),
+                ...transactionDetails
+            };
+            
+            withdrawalHistory.push(newTransaction);
+            users[loggedInUser].withdrawalHistory = withdrawalHistory;
+            localStorage.setItem('users', JSON.stringify(users));
+            updateDisplay();
+
+            setTimeout(() => {
+                closeWithdrawPopup();
+            }, 3000);
+        }
+        
+        function openWithdrawalHistoryPopup() {
+            closeWithdrawPopup();
+            updateWithdrawalHistoryDisplay();
+            withdrawHistoryPopupOverlay.style.display = 'flex';
+            setTimeout(() => {
+                withdrawHistoryPopupOverlay.classList.add('show');
+            }, 10);
+        }
+
+        function closeWithdrawalHistoryPopup() {
+            withdrawHistoryPopupOverlay.classList.remove('show');
+            setTimeout(() => {
+                withdrawHistoryPopupOverlay.style.display = 'none';
+            }, 300);
+        }
+
+        function updateWithdrawalHistoryDisplay() {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            const users = JSON.parse(localStorage.getItem('users'));
+            const withdrawalHistory = users[loggedInUser].withdrawalHistory || [];
+            
+            withdrawHistoryList.innerHTML = '';
+            
+            if (withdrawalHistory.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'Không có lịch sử giao dịch.';
+                li.style.textAlign = 'center';
+                li.style.color = '#999';
+                li.style.fontStyle = 'italic';
+                withdrawHistoryList.appendChild(li);
+                return;
+            }
+            
+            withdrawalHistory.slice().reverse().forEach(transaction => {
+                const li = document.createElement('li');
+                
+                if (transaction.type === 'Ngân hàng') {
+                    li.classList.add('bank-withdrawal');
+                    li.innerHTML = `
+                        <span class="transaction-amount">-${transaction.amount.toLocaleString('vi-VN')} VND</span>
+                        <span class="transaction-details">STK: ${transaction.bankAccount} - ${transaction.bankName}</span>
+                        <span class="transaction-details">Chủ TK: ${transaction.bankHolderName}</span>
+                        <span class="transaction-time">${transaction.timestamp}</span>
+                    `;
+                } else if (transaction.type === 'Thẻ cào') {
+                    li.classList.add('card-withdrawal');
+                     li.innerHTML = `
+                        <span class="transaction-amount">-${transaction.amount.toLocaleString('vi-VN')} VND</span>
+                        <span class="transaction-details">Thẻ: ${transaction.cardType}</span>
+                        <span class="transaction-details">Serial & Code: ${transaction.cardSerialAndCode}</span>
+                        <span class="transaction-time">${transaction.timestamp}</span>
+                    `;
+                }
+                
+                withdrawHistoryList.appendChild(li);
+            });
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function goToAdminPanel() {
+            hideAllPopups();
+            updateCardListTable();
+            adminPanelOverlay.style.display = 'flex';
+            setTimeout(() => {
+                adminPanelOverlay.classList.add('show');
+            }, 10);
+        }
+
+        function closeAdminPanel() {
+            adminPanelOverlay.classList.remove('show');
+            setTimeout(() => {
+                adminPanelOverlay.style.display = 'none';
+            }, 300);
+        }
+        
+        function addMoney() {
+            const amount = parseInt(addMoneyInput.value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Vui lòng nhập số tiền hợp lệ!');
+                return;
+            }
+
+            balance += amount;
+            updateBalanceInLocalStorage();
+            updateDisplay();
+            alert(`Đã thêm thành công ${amount.toLocaleString('vi-VN')} VND vào tài khoản.`);
+            addMoneyInput.value = '';
+        }
+
+        function resetBalance() {
+            balance = 1000000;
+            updateBalanceInLocalStorage();
+            updateDisplay();
+            alert('Số dư đã được reset về 1,000,000 VND.');
+        }
+
+        function addCard() {
+            const value = parseInt(adminCardValueSelect.value);
+            const serial = adminCardSerialInput.value.trim();
+            const code = adminCardCodeInput.value.trim();
+            
+            if (!serial || !code) {
+                alert('Vui lòng nhập đủ Serial và Mã thẻ!');
+                return;
+            }
+
+            let scratchCards = JSON.parse(localStorage.getItem('scratchCards')) || [];
+            scratchCards.push({
+                value: value,
+                serial: serial,
+                code: code,
+                isUsed: false
+            });
+            localStorage.setItem('scratchCards', JSON.stringify(scratchCards));
+
+            alert('Đã thêm thẻ cào thành công!');
+            adminCardSerialInput.value = '';
+            adminCardCodeInput.value = '';
+            updateCardListTable();
+        }
+
+        function updateCardListTable() {
+            let scratchCards = JSON.parse(localStorage.getItem('scratchCards')) || [];
+            cardListTableBody.innerHTML = '';
+            
+            if (scratchCards.length === 0) {
+                const row = cardListTableBody.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 4;
+                cell.textContent = 'Chưa có thẻ cào nào được thêm.';
+                cell.style.textAlign = 'center';
+                cell.style.fontStyle = 'italic';
+                return;
+            }
+
+            scratchCards.forEach(card => {
+                const row = cardListTableBody.insertRow();
+                row.insertCell(0).textContent = card.value.toLocaleString('vi-VN') + ' VND';
+                row.insertCell(1).textContent = card.serial;
+                row.insertCell(2).textContent = card.code;
+                
+                const statusCell = row.insertCell(3);
+                statusCell.textContent = card.isUsed ? 'Đã dùng' : 'Chưa dùng';
+                statusCell.classList.add(card.isUsed ? 'used' : 'unused');
+            });
+        }
+
+        function updateBalanceInLocalStorage() {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (users && users[loggedInUser]) {
+                users[loggedInUser].balance = balance;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+        
+        function hideAllPopups() {
+            popupOverlay.style.display = 'none';
+            rechargePopupOverlay.style.display = 'none';
+            withdrawPopupOverlay.style.display = 'none';
+            withdrawHistoryPopupOverlay.style.display = 'none';
+            adminPanelOverlay.style.display = 'none';
+        }
+        
+        function openGamePopup() {
+            hideAllPopups();
+            popupOverlay.style.display = 'flex';
+            generateInitialHistory();
+            updateGameUI();
+        }
+
+        function closeGamePopup() {
+            popupOverlay.style.display = 'none';
+        }
+
+        function startGameLoop() {
+            generateInitialHistory();
+            runGameRound();
+        }
+
+    </script>
+    <script>
+let fakeHistory = [];
+
+function generateFakeHistory() {
+  fakeHistory = [];
+  const options = ["Tài", "Xỉu"];
+  for (let i = 0; i < 20; i++) {
+    const result = options[Math.floor(Math.random() * options.length)];
+    fakeHistory.push(result);
+  }
+}
+
+function openHistory() {
+  generateFakeHistory();
+  const list = document.getElementById("history-list");
+  list.innerHTML = fakeHistory.map(item => `<div>${item}</div>`).join("");
+  document.getElementById("history-popup").style.display = "flex";
+}
+
+function closeHistory() {
+  document.getElementById("history-popup").style.display = "none";
+}
+</script>
+
+    <!-- Nút Rút cố định dưới màn hình -->
+<button class="withdraw-btn-fixed" onclick="openWithdrawPopup()">Rút</button>
+
+
+</body>
+</html>

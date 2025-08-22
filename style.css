@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: bold;
+    color: gold;
+}
+
+.game-area {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0;
+    background: linear-gradient(to bottom, #4b2b1b, #724d35);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.bet-section {
+    width: 45%;
+    height: 150px;
+    background-color: #5c3e2e;
+    border: 3px solid #b8860b;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.bet-section:hover {
+    transform: scale(1.05);
+}
+
+.bet-section.selected {
+    border-color: yellow;
+    box-shadow: 0 0 15px yellow;
+}
+
+.bet-label {
+    font-size: 3em;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.dice-area {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dice-text {
+    font-size: 5em;
+    animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    25% { transform: translate(-1px, -2px) rotate(-1deg); }
+    50% { transform: translate(-3px, 0px) rotate(1deg); }
+    75% { transform: translate(1px, -1px) rotate(0deg); }
+    100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+
+.message-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    height: 30px;
+}
+
+.chips-container {
+    margin: 20px 0;
+}
+
+.chip {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: #e74c3c;
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.chip:hover {
+    transform: translateY(-5px);
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bet-btn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #c0392b;
+    color: white;
+}
